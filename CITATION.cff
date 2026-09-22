@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this benchmark, its harness, or its tooling, please cite it as below."
+title: "GLM-5.3-Flash on 4× CMP 170HX: Optimized Serving"
+abstract: >-
+  Reproducible throughput, latency, and prefill benchmarks for GLM-5.3-Flash (321B-A18B MoE)
+  served with vLLM on 4× NVIDIA CMP 170HX GPUs, using pipeline parallelism and speculative
+  decoding with a variable (rolling) acceptance rule. Includes the measurement harness, the
+  quantization recipe, and the acceptance tooling.
+type: software
+authors:
+  - name: "JKeys LLC"
+year: 2026
+url: "https://github.com/JJ48/glm53-flash-170hx-serving"
+repository-code: "https://github.com/JJ48/glm53-flash-170hx-serving"
+license: Apache-2.0
+keywords:
+  - LLM serving
+  - vLLM
+  - speculative decoding
+  - quantization
+  - benchmark
+  - GLM-5.3-Flash

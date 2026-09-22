@@ -1,0 +1,9 @@
+workload,tok_s,accept_len
+prose,73,1.91
+reasoning,99,2.91
+code,127,4.18
+math,127,4.51
+json,150,4.95
+count,203,7.51
+repeat,170,7.31
+overall,120,3.96

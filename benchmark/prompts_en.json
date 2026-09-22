@@ -1,0 +1,30 @@
+{
+  "prose_1": {
+    "messages": [{"role": "user", "content": "Write three paragraphs describing a coastal town waking up on an autumn morning. Vary the sentence rhythm."}],
+    "max_tokens": 600
+  },
+  "reasoning_1": {
+    "messages": [{"role": "user", "content": "A farmer has 17 sheep. All but 9 run away. Then he buys twice as many as he has left. How many sheep now? Explain each step."}],
+    "max_tokens": 500
+  },
+  "code_1": {
+    "messages": [{"role": "user", "content": "Write a Python function `merge_intervals(intervals)` that merges overlapping [start, end] intervals, with a docstring and three example calls."}],
+    "max_tokens": 500
+  },
+  "math_1": {
+    "messages": [{"role": "user", "content": "Compute the definite integral of x^2 * ln(x) from 1 to e. Show the integration-by-parts steps."}],
+    "max_tokens": 500
+  },
+  "json_1": {
+    "messages": [{"role": "user", "content": "Return a JSON object for a library book with fields: title, authors (array), year, isbn, available (bool), tags (array of 3). Output only valid JSON."}],
+    "max_tokens": 300
+  },
+  "count_1": {
+    "messages": [{"role": "user", "content": "Output the integers from 1 to 60, one per line, nothing else."}],
+    "max_tokens": 300
+  },
+  "repeat_1": {
+    "messages": [{"role": "user", "content": "Repeat the following line exactly, character for character, and output nothing else:\nanchor basil cedar delta ember fjord garnet harbor indigo jasper kettle lantern meadow nickel orchard pepper quartz ribbon saddle timber"}],
+    "max_tokens": 200
+  }
+}

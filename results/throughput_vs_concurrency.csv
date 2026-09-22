@@ -1,0 +1,6 @@
+concurrency,per_request_tok_s,system_total_tok_s,mean_latency_s,accept_len,failed
+1,121,107,3.7,3.15,0
+2,99,170,4.7,3.10,0
+4,61,199,7.9,3.35,0
+8,41,245,11.8,3.43,0
+16,20,248,22.0,3.43,0
