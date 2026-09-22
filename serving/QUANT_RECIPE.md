@@ -24,7 +24,7 @@ huggingface-cli download JJ48-24/GLM-5.3-Flash-AWQ-W4A16-aggr-w8-int4g32-mixA --
 ```
 
 > The **drafter** is not on Hugging Face and is not redistributable (CC BY-NC-ND, internal-only).
-> Supply your own compatible MTP drafter — see [`VARIABLE_ACCEPTANCE.md`](VARIABLE_ACCEPTANCE.md) and
+> Supply your own compatible speculative drafter — see [`VARIABLE_ACCEPTANCE.md`](VARIABLE_ACCEPTANCE.md) and
 > the root README.
 
 ## Reproducing the quant from the base model

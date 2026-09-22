@@ -71,7 +71,7 @@ Raw numbers are in [`results/`](results/).
 | **Server** | vLLM, pipeline-parallel **PP4** across all 4 GPUs (layer split 13/12/12/8), no tensor parallelism |
 | **Model** | GLM-5.3-Flash — 321B total / 18B active MoE, 45 layers (34 KDA linear-attention + 11 full MLA) |
 | **Weight quant** | compressed-tensors, weight-only: attention **INT8** per-channel · MoE experts **INT4 g32** · dense **INT4 g128** · lm_head INT4 g32 — see [`serving/QUANT_RECIPE.md`](serving/QUANT_RECIPE.md) |
-| **Speculative decode** | MTP drafter, **7 draft tokens/step**, with a **variable (rolling) acceptance** rule keyed to a per-step time budget — see [`serving/VARIABLE_ACCEPTANCE.md`](serving/VARIABLE_ACCEPTANCE.md) |
+| **Speculative decode** | DFlash2 drafter, **7 draft tokens/step**, with a **variable (rolling) acceptance** rule keyed to a per-step time budget — see [`serving/VARIABLE_ACCEPTANCE.md`](serving/VARIABLE_ACCEPTANCE.md) |
 | **Prefill** | chunked, `max_num_batched_tokens` 1536 · KV cache pool ~692k tokens |
 | **Sampling** | production: temperature 1.0 / top-p 0.95 |
 | **Hardware tuning** | cards unlocked (cmpunlocker `--p2p`), per-card HBM overclock, **175 W/card** power cap — see [`serving/HARDWARE_TUNING.md`](serving/HARDWARE_TUNING.md) |
@@ -92,7 +92,7 @@ obtain and use it at your own discretion.
 
 ## Reproducing
 
-You need: GLM-5.3-Flash (from its own source), a compatible 7-token MTP drafter (see the licensing
+You need: GLM-5.3-Flash (from its own source), a compatible 7-token speculative drafter (see the licensing
 note below — you supply/train your own), the cards unlocked with cmpunlocker (see above), and a
 vLLM build with the patches in [`kernels/`](kernels/).
 
@@ -130,9 +130,9 @@ steady-state windows).
 is under its own license.
 
 **Not included** (bring your own):
-- **Drafter weights.** The MTP drafter used here is licensed **CC BY-NC-ND** for internal use only.
+- **Drafter weights.** The DFlash2 drafter used here is licensed **CC BY-NC-ND** for internal use only.
   Its **No-Derivatives** term and internal-only grant mean neither the weights nor any quantized
-  derivative can be redistributed. The repo documents exactly how a 7-token MTP drafter is wired in
+  derivative can be redistributed. The repo documents exactly how a 7-token DFlash2 drafter is wired in
   and configured, so you can reproduce with a compatible drafter you supply or train — we just can't
   ship ours.
 
@@ -165,7 +165,7 @@ This work builds on:
   <https://github.com/asm64-hooligan/cmpunlocker>. Our per-card HBM clock autotune (`--mclk-percard`
   + `tools/hbmtune`) is contributed upstream; until merged it's on the fork at
   <https://github.com/JJ48/cmpunlocker> (branch `percard-hbm`). See [`serving/HARDWARE_TUNING.md`](serving/HARDWARE_TUNING.md).
-- **MTP speculative drafter** — used under an internal CC BY-NC-ND license; not redistributed here
+- **DFlash2 speculative drafter** — used under an internal CC BY-NC-ND license; not redistributed here
   (see [`NOTICE.md`](NOTICE.md)).
 
 ## License

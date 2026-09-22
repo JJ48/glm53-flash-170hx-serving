@@ -6,7 +6,7 @@
 set -euo pipefail
 
 MODEL=${MODEL:-/path/to/glm5.3-flash-w8w4}          # the quantized model (see serving/QUANT_RECIPE.md)
-DRAFTER=${DRAFTER:-/path/to/your-mtp-drafter}       # you supply this — the benchmark drafter is not redistributable
+DRAFTER=${DRAFTER:-/path/to/your-dflash2-drafter}       # you supply this — the benchmark drafter is not redistributable
 PORT=${PORT:-8000}
 
 # --- variable / rolling speculative acceptance (see serving/VARIABLE_ACCEPTANCE.md) ---
@@ -14,7 +14,7 @@ export VLLM_SPEC_ROLL=1
 export VLLM_SPEC_ROLL_SOLO=4                          # rolling rule only while each micro-batch holds one request
 export VLLM_SPEC_ROLL_STEP_MS=24.9,27.4,29.9,32.5,35.8,38.0,41.0,42.9   # MEASURE THIS ON YOUR HARDWARE
 
-# Speculative decoding config: an MTP drafter proposing up to 7 tokens/step.
+# Speculative decoding config: a DFlash2 drafter proposing up to 7 tokens/step.
 SPEC='{"method":"dflash","model":"'"$DRAFTER"'","num_speculative_tokens":7}'
 
 vllm serve "$MODEL" \

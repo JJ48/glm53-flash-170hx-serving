@@ -18,15 +18,15 @@ Obtain the base model from its official source and comply with its license.
 
 ## Speculative-decoding drafter (weights NOT included)
 
-The MTP drafter used in these benchmarks is licensed **CC BY-NC-ND** (Creative Commons
+The DFlash2 drafter used in these benchmarks is licensed **CC BY-NC-ND** (Creative Commons
 Attribution-NonCommercial-NoDerivatives), granted for internal use only. Under its **No-Derivatives**
 term and internal-only grant, neither the drafter weights nor any quantized derivative of them may be
 redistributed, and this repository does not contain them.
 
-What *is* published is our own integration and scheduling tooling — how a 7-token MTP drafter is
+What *is* published is our own integration and scheduling tooling — how a 7-token DFlash2 drafter is
 wired into the server and the **variable/rolling acceptance** rule (`kernels/`,
 `serving/VARIABLE_ACCEPTANCE.md`) — which is original work over Apache-2.0 vLLM and contains no
-drafter weights. To reproduce the speculative-decoding results, supply a compatible MTP drafter you
+drafter weights. To reproduce the speculative-decoding results, supply a compatible speculative drafter you
 have the right to use (your own, or one you train).
 
 ## Benchmark corpora
