@@ -130,11 +130,11 @@ steady-state windows).
 is under its own license.
 
 **Not included** (bring your own):
-- **Drafter weights.** The DFlash2 drafter used here is licensed **CC BY-NC-ND** for internal use only.
-  Its **No-Derivatives** term and internal-only grant mean neither the weights nor any quantized
-  derivative can be redistributed. The repo documents exactly how a 7-token DFlash2 drafter is wired in
-  and configured, so you can reproduce with a compatible drafter you supply or train — we just can't
-  ship ours.
+- **Drafter weights.** The drafter is **GLM-5.3-DFlash2** by incoai
+  (<https://huggingface.co/incoai/GLM-5.3-DFlash2>), **CC BY-NC-ND**. We ship none — our served copy is
+  a quantized derivative, which the **No-Derivatives** term doesn't let us redistribute. Get the
+  original from incoai (under its license), or reproduce with a compatible drafter you supply; the repo
+  documents exactly how a 7-token drafter is wired in.
 
 ## Citation
 
@@ -165,8 +165,8 @@ This work builds on:
   <https://github.com/asm64-hooligan/cmpunlocker>. Our per-card HBM clock autotune (`--mclk-percard`
   + `tools/hbmtune`) is contributed upstream; until merged it's on the fork at
   <https://github.com/JJ48/cmpunlocker> (branch `percard-hbm`). See [`serving/HARDWARE_TUNING.md`](serving/HARDWARE_TUNING.md).
-- **DFlash2 speculative drafter** — used under an internal CC BY-NC-ND license; not redistributed here
-  (see [`NOTICE.md`](NOTICE.md)).
+- **GLM-5.3-DFlash2** — the speculative drafter, by incoai. CC BY-NC-ND.
+  <https://huggingface.co/incoai/GLM-5.3-DFlash2>. Weights not redistributed here (see [`NOTICE.md`](NOTICE.md)).
 
 ## License
 

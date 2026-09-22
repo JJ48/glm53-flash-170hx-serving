@@ -18,10 +18,12 @@ Obtain the base model from its official source and comply with its license.
 
 ## Speculative-decoding drafter (weights NOT included)
 
-The DFlash2 drafter used in these benchmarks is licensed **CC BY-NC-ND** (Creative Commons
-Attribution-NonCommercial-NoDerivatives), granted for internal use only. Under its **No-Derivatives**
-term and internal-only grant, neither the drafter weights nor any quantized derivative of them may be
-redistributed, and this repository does not contain them.
+The drafter used in these benchmarks is **GLM-5.3-DFlash2** by incoai
+(<https://huggingface.co/incoai/GLM-5.3-DFlash2>), licensed **CC BY-NC-ND** (Creative Commons
+Attribution-NonCommercial-NoDerivatives). This repository ships no drafter weights: our served copy
+is a quantized derivative, which the **No-Derivatives** term does not permit us to redistribute.
+Obtain the original from incoai under its license, or supply a compatible drafter you have the right
+to use.
 
 What *is* published is our own integration and scheduling tooling — how a 7-token DFlash2 drafter is
 wired into the server and the **variable/rolling acceptance** rule (`kernels/`,
