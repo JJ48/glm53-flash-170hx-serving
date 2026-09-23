@@ -45,10 +45,9 @@ vllm serve "$MODEL" --served-model-name GLM-5.3-Flash --port "$PORT" \
   --limit-mm-per-prompt '{"image":0,"video":0}' \
   --enable-auto-tool-choice --tool-call-parser glm47 --reasoning-parser glm45
 
-# Options measured after the published results:
-#  - image input: --limit-mm-per-prompt '{"image":4,"video":0}' with VLLM_AOT_MM_KEY=1 and VLLM_GLM5_MM_BUDGET=1
-#    (patches 0035/0036); the KV pool shrinks by about 12 %.
-#  - --long-prefill-token-threshold=1024: a short request arriving during a long prefill waits ~1.8 s instead of ~6.7 s.
+# Notes:
+#  - image input: raise the image limit in --limit-mm-per-prompt and set VLLM_AOT_MM_KEY=1 and VLLM_GLM5_MM_BUDGET=1
+#    (patches 0035/0036); the vision tower and its profile run shrink the KV pool.
 #  - --max-logprobs 5: only needed for the perplexity gate (benchmark/ppl_eval.py).
 # Production sampling is the model's generation_config default (temperature 1.0 / top-p 0.95); the benchmarks send no
 # sampling parameters so they inherit it.
