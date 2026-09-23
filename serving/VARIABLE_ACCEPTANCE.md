@@ -6,9 +6,11 @@ accepted — and acceptance is highly content-dependent (structured output accep
 fixed `k` is therefore wrong for most requests. This tooling picks `k` **per request, adaptively**,
 from measured acceptance and the measured step-time curve.
 
-Code: [`kernels/spec_roll.py`](../kernels/spec_roll.py) (the estimator) and
-[`kernels/spec_roll_solo_patch.py`](../kernels/spec_roll_solo_patch.py) (the concurrency guard).
-Both are Apache-2.0 modifications over vLLM.
+Code: [`kernels/spec_roll.py`](../kernels/spec_roll.py) (the estimator),
+[`kernels/spec_roll_solo_patch.py`](../kernels/spec_roll_solo_patch.py) (the concurrency guard) and
+[`kernels/apply_spec_k.py`](../kernels/apply_spec_k.py) with `kernels/files/` (patch 0003: the per-request draft length
+and the scheduler/runner hooks the rule plugs into). All are Apache-2.0 modifications over vLLM, applied in order by
+`kernels/apply_stack.sh` (see [`PATCH_STACK.md`](PATCH_STACK.md)).
 
 ## How it decides `k`
 

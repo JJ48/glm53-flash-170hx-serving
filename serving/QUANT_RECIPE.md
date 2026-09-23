@@ -51,7 +51,8 @@ python quant/requant.py run  --src /path/to/base --dst /path/to/out --profile ag
 An optional GPTQ (calibrated) path is available if you supply a `calib/gptq.py` and per-layer
 Hessians; the default is RTN (round-to-nearest), which needs no calibration data. Two of the
 profiles assume small model-side patches so the loader keeps `quant_config` on the fused KDA/MLA
-projections — see the tool's module docstring for details.
+projections: they ship as [`kernels/quant_config_patch.py`](../kernels/quant_config_patch.py) (patches 0001/0002) and
+are required to load the published checkpoint in the club image; `kernels/apply_stack.sh` applies them.
 
 The exact scheme above (INT8 attention + INT4 experts) is the "aggr" result plus a follow-up pass
 that moves shared-experts / dense-MLP / lm_head to INT4 g32; the published HF checkpoint is the final

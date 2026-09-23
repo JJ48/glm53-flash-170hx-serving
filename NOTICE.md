@@ -7,7 +7,11 @@ software and references to third-party models. Terms below.
 
 The patches in `kernels/` are modifications to [vLLM](https://github.com/vllm-project/vllm), which is
 licensed under Apache-2.0. They are redistributed here under Apache-2.0, with changes noted in each
-patch file's header. This project is not affiliated with or endorsed by the vLLM project.
+patch file's header. `kernels/files/` contains vLLM source files (the `pristine/` copies patch 0003 uses as its
+baseline, and the modules it adds), and `kernels/marlin/` contains a diff against vLLM commit 8e92248f79 plus build
+glue for its Marlin MoE kernel; both are Apache-2.0. The patches target the club-170hx community image
+(`ghcr.io/pixelml/club-170hx:vllm-glm53-sm80-pp-20260905`), which is not redistributed here. This project is not
+affiliated with or endorsed by the vLLM project.
 
 ## GLM-5.3-Flash model
 

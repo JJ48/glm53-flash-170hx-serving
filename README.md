@@ -75,6 +75,7 @@ Raw numbers are in [`results/`](results/).
 | **Prefill** | chunked, `max_num_batched_tokens` 1536 · KV cache pool ~692k tokens |
 | **Sampling** | production: temperature 1.0 / top-p 0.95 |
 | **Hardware tuning** | cards unlocked (cmpunlocker `--p2p`), per-card HBM overclock, **175 W/card** power cap — see [`serving/HARDWARE_TUNING.md`](serving/HARDWARE_TUNING.md) |
+| **Patch stack** | 23 vLLM patches over the club-170hx image, applied in production's order; all but the two loader fixes are inert until their flag is set — see [`serving/PATCH_STACK.md`](serving/PATCH_STACK.md) |
 
 ## Hardware prerequisites
 
@@ -93,15 +94,21 @@ obtain and use it at your own discretion.
 ## Reproducing
 
 You need: GLM-5.3-Flash (from its own source), a compatible 7-token speculative drafter (see the licensing
-note below — you supply/train your own), the cards unlocked with cmpunlocker (see above), and a
-vLLM build with the patches in [`kernels/`](kernels/).
+note below — you supply/train your own), the cards unlocked with cmpunlocker (see above), and the
+club-170hx vLLM image (`ghcr.io/pixelml/club-170hx:vllm-glm53-sm80-pp-20260905`) with the full patch stack
+from [`kernels/`](kernels/) applied — see [`serving/PATCH_STACK.md`](serving/PATCH_STACK.md).
 
 ```bash
+# 0. Inside the club-170hx container, apply the patch stack (in order; every patch is inert until its flag is set)
+bash kernels/apply_stack.sh
+#    optional (+2.9 %): build the standalone 6-stage MoE Marlin kernel for patch 0018
+bash kernels/marlin/build.sh
+
 # 1. Get the quantized model — download the published checkpoint from Hugging Face:
 huggingface-cli download JJ48-24/GLM-5.3-Flash-AWQ-W4A16-aggr-w8-int4g32-mixA --local-dir ./glm5.3-flash-w8w4
 #    (or reproduce it from the base model with the recipe: see serving/QUANT_RECIPE.md)
 
-# 2. Launch the server (adjust paths, drafter, GPU topology to your box)
+# 2. Launch the server with the production flags (adjust paths, drafter, GPU topology to your box)
 bash serving/launch.example.sh
 
 # 3. Run the benchmarks against the OpenAI-compatible endpoint
@@ -121,7 +128,9 @@ steady-state windows).
 - The benchmark harness (`benchmark/`)
 - Full methodology (`METHODOLOGY.md`) and raw results (`results/`)
 - The weight-quantization recipe and tooling (`quant/`, `serving/QUANT_RECIPE.md`)
-- The variable/rolling speculative-acceptance tooling and vLLM patches (`kernels/`, `serving/VARIABLE_ACCEPTANCE.md`)
+- The complete vLLM patch stack the results were measured with (`kernels/`, `serving/PATCH_STACK.md`), including the
+  variable/rolling speculative-acceptance tooling (`serving/VARIABLE_ACCEPTANCE.md`) and the standalone Marlin kernel
+  build (`kernels/marlin/`)
 - Serving configuration (`serving/`)
 
 **Model weights:** the quantized GLM-5.3-Flash checkpoint is **published on Hugging Face** —
@@ -135,6 +144,23 @@ is under its own license.
   a quantized derivative, which the **No-Derivatives** term doesn't let us redistribute. Get the
   original from incoai (under its license), or reproduce with a compatible drafter you supply; the repo
   documents exactly how a 7-token drafter is wired in.
+
+## Changelog
+
+**2026-09-23**
+- **Full patch stack published** ([`serving/PATCH_STACK.md`](serving/PATCH_STACK.md), `kernels/apply_stack.sh`). The
+  first release shipped only the rolling-acceptance files: without patches 0001/0002 the published INT8-attention
+  checkpoint does not load in the club image, without 0003 the rolling rule is not wired in, and the speed patches
+  behind the published numbers were missing.
+- **Fixed a long-prompt bug in the compile patch (0014) with patch 0038.** 0014 froze the indexer head-gate of 9 of
+  the 11 sparse-attention layers at zero, so for prompts over 2,048 tokens those layers read only the first 2,048
+  tokens. Set `VLLM_GLM5_WP_FIX=1` whenever `VLLM_GLM5_COMPILE=1`. Measured on synthetic long documents with planted
+  facts: a retrieval-shaped prompt went from 2/12 to 12/12 correct, and decode at 16k-token prompts from 65 to 130 tok/s
+  (draft acceptance 1.6 -> 4.0). Time to first token is unchanged (8k 3.14 -> 3.13 s, 16k 5.58 -> 5.53 s). The results
+  above were measured with the bug present; they use short prompts, where the model attends to every token, and the
+  prefill ladder is unaffected.
+- **Launch example corrected** to the measured configuration: every patch flag, the layer split, the per-draft-length
+  CUDA-graph schedule, and `VLLM_SPEC_ROLL_SOLO=2` (the example previously said 4).
 
 ## Citation
 

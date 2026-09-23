@@ -1,0 +1,54 @@
+--- a/csrc/libtorch_stable/moe/marlin_moe_wna16/generate_kernels.py
++++ b/csrc/libtorch_stable/moe/marlin_moe_wna16/generate_kernels.py
+@@ -227,6 +227,19 @@
+                     config_sm75["stages"] = 2
+                     sm_75_result_dict[(a_type, b_type, c_type)].append(config_sm75)
+ 
++    # ---- dev (JKeys, 2026-09-15): extra experiment configs for the bf16 / u4b8 decode path only: deeper-K tiles and
++    # other pipeline depths, selectable through the op's thread_k/thread_n args and MARLIN_DEV_STAGES in ops.cu ----
++    _dev_key = ("kBFloat16", "kU4B8", "kBFloat16")
++    if _dev_key in result_dict:
++        for m_blocks in (0.5, 1):
++            for (thread_k, thread_n, threads, stages) in [(256, 64, 128, 4), (256, 128, 256, 4), (128, 128, 256, 2),
++                                                         (128, 128, 256, 3), (128, 64, 128, 2), (64, 128, 128, 2),
++                                                         (64, 128, 128, 6), (64, 128, 128, 8)]:   # deeper pipelines at the 170HX decode config
++                result_dict[_dev_key].append({
++                    "threads": threads, "s_type": "kBFloat16", "thread_m_blocks": max(m_blocks, 1),
++                    "thread_k_blocks": thread_k // 16, "thread_n_blocks": thread_n // 16,
++                    "m_block_size_8": "true" if m_blocks == 0.5 else "false", "stages": stages,
++                    "group_blocks": 8, "is_zp_float": "false"})
+     kernel_selector_str = FILE_HEAD_COMMENT
+ 
+     for result_dict_tmp in [result_dict, sm_75_result_dict]:
+--- a/csrc/libtorch_stable/moe/marlin_moe_wna16/ops.cu
++++ b/csrc/libtorch_stable/moe/marlin_moe_wna16/ops.cu
+@@ -23,6 +23,7 @@
+   #define MARLIN_NAMESPACE_NAME marlin_moe_wna16
+ #endif
+ 
++#include <cstdlib>
+ #include "kernel.h"
+ 
+ #include <torch/csrc/stable/accelerator.h>
+@@ -446,6 +447,11 @@
+   STD_TORCH_CHECK(major_capability * 10 + minor_capability >= 75,
+                   "marlin kernel only support Turing or newer GPUs.");
+   int stages = 4;
++  // dev (JKeys): pipeline-depth knob for DECODE-sized calls only (moe_block_size <= 16 -> thread_m_blocks == 1; the extra
++  // instantiations exist only there; prefill blocks of 64 keep the shipped 4 stages)
++  if (moe_block_size <= 16) {
++    if (const char* dev_stages = std::getenv("MARLIN_DEV_STAGES")) stages = std::atoi(dev_stages);
++  }
+   if (major_capability == 7 && minor_capability == 5) {
+     stages = 2;
+     STD_TORCH_CHECK(a_type == vllm::kFloat16 || a_type == vllm::kS8,
+--- a/csrc/libtorch_stable/torch_utils.h
++++ b/csrc/libtorch_stable/torch_utils.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <torch/csrc/inductor/aoti_torch/c/shim.h>
++#include <torch/csrc/stable/c/shim.h>  // torch_get_current_cuda_blas_handle (torch 2.13)
+ #include <torch/csrc/stable/accelerator.h>
+ #include <torch/csrc/stable/ops.h>
+ #include <torch/csrc/stable/tensor.h>
