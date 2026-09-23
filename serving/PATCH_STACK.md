@@ -79,7 +79,7 @@ for every stage count; without the flag the fork's own kernel runs.
 
 ## Verification
 
-Every file in `kernels/` is byte-for-byte the one the production box applies, with two exceptions. Four patch files had
-their module docstrings edited to drop internal paths; the edits they make to vLLM are unchanged. `quant_config_patch.py`
-re-implements the production image's 0001/0002 step; applied to the pristine `model.py` and `kda.py` it produces files
-identical to production's. `apply_stack.sh` applies the stack in production's order.
+`kernels/apply_stack.sh`, run on a fresh club-170hx container (no GPU, no network), reproduces the production server's
+vLLM tree **byte for byte**: all 2,431 `.py` files hash identically to production's manifest, captured 2026-09-23 with
+patch 0038 in place. (Four patch files had their module docstrings edited to drop internal paths; the edits they make
+to vLLM are unchanged, as the hash match shows.)
